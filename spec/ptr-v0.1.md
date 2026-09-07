@@ -11,6 +11,8 @@ Parcel Truth Records (PTR) v0.1 defines a small, human-readable file format for 
 
 A `.ptr` file represents exactly one parcel. It stores the source parcel description needed to reconstruct the parcel boundary as ordered courses. It does not store computed geometry as authoritative data.
 
+PTR describes the parcel boundary record itself, not the broader administrative, legal, fiscal, market, environmental, or application context that may be associated with the parcel.
+
 The key words `MUST`, `MUST NOT`, `REQUIRED`, `SHOULD`, `SHOULD NOT`, and `MAY` in this document are to be interpreted as normative requirements.
 
 PTR v0.1 is independent of PTR Core, PTRC, Spatialdom applications, and any specific database. A conforming implementation can read, write, and validate PTR v0.1 records without relying on undocumented application behavior.
@@ -42,6 +44,8 @@ The top-level object defines the parcel record. The following fields are defined
 | `declared_area` | number | No | Documentary area stated by the source record, in square metres. |
 
 Conforming readers MUST apply the required semantics of these fields. Conforming writers MUST NOT write computed geometry or metrics into these fields unless the value is documentary source information as defined here.
+
+`record_id` is optional application or database identity. It MAY be used to correlate a PTR record with external systems, but it MUST NOT be required to reconstruct the parcel boundary and MUST NOT be treated as part of the parcel's canonical boundary definition.
 
 PTR v0.1 does not define extension fields. Implementations that encounter unknown fields MAY preserve them for round-tripping, but MUST NOT treat them as normative PTR v0.1 fields.
 
@@ -264,6 +268,17 @@ The following are stored documentary values when present:
 - `lines`
 - `declared_area`
 
+The following are examples of parcel context, not PTR documentary values:
+
+- current owner or taxpayer
+- tax declaration number
+- zoning classification
+- flood-hazard classification
+- building footprint
+- market valuation
+- title transaction history
+- application review status
+
 Derived computational values include, but are not limited to:
 
 - vertices
@@ -281,11 +296,15 @@ Derived values MAY be computed by PTR Core or consuming applications. They MUST 
 
 `declared_area` and computed area are different values. Implementations MUST NOT overwrite `declared_area` with computed area unless the user explicitly changes the documentary value outside the scope of automatic computation.
 
-## 11. Out of Scope
+Computed geometry and metrics are derived because they depend on interpretation, numeric precision, reconstruction algorithms, and QA policy. Storing those values as authoritative PTR fields would make it unclear whether the documentary courses or the computed geometry controls when they disagree.
 
-PTR v0.1 does not attempt to represent a complete cadastral, legal, tax, or GIS database.
+## 11. Scope Boundaries
 
-The following are outside the normative PTR v0.1 record:
+PTR v0.1 does not attempt to represent a complete cadastral, land-registration, taxation, land-administration, legal, or GIS database.
+
+This section is normative. Contextual information is not part of PTR merely because it relates to a parcel. Such information normally belongs in applications, databases, GIS layers, registries, or linked datasets outside the `.ptr` file.
+
+The following non-exhaustive examples are outside the normative PTR v0.1 record:
 
 - ownership and taxpayer data
 - title history
@@ -307,6 +326,8 @@ The following are outside the normative PTR v0.1 record:
 - application workflow state
 
 External systems MAY link any of those datasets to a PTR-derived parcel by identifiers, spatial relationships, temporal relationships, or application-level records.
+
+Future PTR versions MAY define additional fields when they are necessary for interoperable parcel-description exchange. PTR v0.1 intentionally avoids speculative fields whose primary purpose is application workflow, land-administration context, or derived analysis.
 
 ## 12. Valid Complete Example
 
@@ -346,12 +367,54 @@ The following is the smallest shape of a PTR v0.1 record:
 }
 ```
 
-## 14. Conformance
+## 14. Validation
+
+PTR v0.1 validation distinguishes conformance from derived parcel-quality analysis. Implementations MAY expose their own exception classes, API response shapes, severities, or diagnostic codes, but those implementation details are outside this specification.
+
+The validation categories are:
+
+| Category | Purpose | Non-conforming on failure? |
+| --- | --- | --- |
+| Serialization | Confirms that the file is UTF-8 JSON containing one top-level object. | Yes |
+| Structural | Confirms required fields, JSON types, course array shape, and version value. | Yes |
+| Semantic | Confirms PTR value rules such as canonical bearings, positive metre distances, ordered boundary course requirements, and valid field relationships. | Yes |
+| Geometric QA | Reports derived diagnostics such as closure, degeneracy, self-intersection, computed area difference, or orientation. | No |
+
+A record with serialization, structural, or semantic failures is not a conforming PTR v0.1 record. A record with only geometric QA findings remains a conforming PTR v0.1 record unless another requirement in this specification is violated.
+
+Ambiguous human input and invalid canonical PTR serialization are different cases:
+
+- Ambiguous human input is text supplied to a parser or application before a PTR value is written. It MUST be rejected rather than guessed.
+- Invalid canonical PTR serialization is a value already present in a `.ptr` file that violates the canonical syntax or another PTR requirement. The containing record is non-conforming.
+- Non-canonical but unambiguous input MAY be normalized before storage. Once stored, the `.ptr` file MUST contain the canonical value.
+
+Numerical misclosure does not by itself make a PTR record non-conforming. A valid documentary description MAY fail to close because of source precision, transcription, rounding, or inconsistent source records. Implementations SHOULD report closure diagnostics as geometric QA findings and MUST NOT silently modify stored documentary courses to force closure.
+
+Self-intersection, duplicate vertices, zero-area reconstruction, unusually short courses, counterclockwise order, large difference between `declared_area` and computed area, and similar geometry-derived conditions are geometric QA findings. They do not by themselves make a record non-conforming because PTR stores the documentary description, not an authoritative computed geometry. Implementations MAY classify such findings as warnings, errors, review blockers, or informational diagnostics in application-specific workflows.
+
+Representative validation outcomes:
+
+| Case | Example condition | Expected outcome |
+| --- | --- | --- |
+| Minimal valid record | Has `ptr_version` and at least three valid `lines` courses. | Conforming PTR v0.1 record. |
+| Complete valid record | Uses all defined optional fields with valid documentary values. | Conforming PTR v0.1 record. |
+| Invalid JSON | File cannot be parsed as UTF-8 JSON. | Serialization failure; non-conforming. |
+| Missing `lines` | Top-level object omits required `lines`. | Structural failure; non-conforming. |
+| Bad course shape | A course has three items or stores distance before bearing. | Structural failure; non-conforming. |
+| Invalid canonical bearing | Stored bearing is `N68-60E`. | Semantic failure; non-conforming. |
+| Ambiguous bearing input | User input is `N68E28`. | Reject before storage; no canonical value is guessed. |
+| Non-canonical bearing input | User input is `n68-28e`. | May normalize to `N68-28E` before storage. |
+| Non-closing parcel | All stored courses are valid, but reconstructed endpoint misses Point 1. | Conforming record with geometric QA finding. |
+| Self-intersecting parcel | Valid courses reconstruct a crossing boundary. | Conforming record with geometric QA finding. |
+| Declared area mismatch | `declared_area` differs from computed area. | Conforming record with geometric QA finding. |
+
+## 15. Conformance
 
 A conforming PTR v0.1 reader MUST:
 
 - Parse a UTF-8 JSON object with `ptr_version` equal to `"0.1"`.
 - Validate the required fields defined by this specification.
+- Distinguish serialization, structural, semantic, and geometric QA outcomes.
 - Interpret courses as ordered `[bearing, distance]` arrays.
 - Preserve the distinction between documentary stored values and derived computational values.
 - Reject records whose required structure or values violate this specification.
