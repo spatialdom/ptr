@@ -516,6 +516,6 @@ This specification corresponds to repository release `v0.1.0`, published on 7 Se
 
 The specification and accompanying schemas, examples, tests, and documentation are licensed under CC BY 4.0. See `LICENSE.md` in the repository.
 
-Citation metadata is provided in `CITATION.cff`. Academic and research users SHOULD cite the archived DOI for the specific release when one is available; until then, the versioned GitHub release is the preferred reference.
+Citation metadata is provided in `CITATION.cff`. Academic and research users SHOULD cite the archived DOI for the specific release. The PTR v0.1.0 version DOI is `10.5281/zenodo.22641884`; the concept DOI for all PTR releases is `10.5281/zenodo.22641883`.
 
 PTR is a technical parcel-record format. Conformance with this specification does not by itself establish legal ownership, official boundary location, title validity, cadastral authority, tax liability, or an official survey determination.

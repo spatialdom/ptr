@@ -282,9 +282,14 @@ Preferred author attribution:
 **Dominic C. Fargas Jr.**  
 ORCID: https://orcid.org/0009-0000-4088-7476
 
-The `v0.1.0` GitHub release is intended to be archived in Zenodo. Once Zenodo assigns the release DOI, the DOI will be added to `CITATION.cff` and the recommended citation.
+Preferred release citation:
 
-Until the DOI is available, cite the versioned GitHub release rather than an unversioned `main` branch.
+**Dominic C. Fargas Jr. (2026). Parcel Truth Records v0.1 Specification. Zenodo. https://doi.org/10.5281/zenodo.22641884**
+
+Version DOI: https://doi.org/10.5281/zenodo.22641884  
+Concept DOI for all PTR releases: https://doi.org/10.5281/zenodo.22641883
+
+Cite the version DOI for work that depends on PTR v0.1.0. Use the concept DOI only when intentionally referring to the latest archived PTR release.
 
 ---
 

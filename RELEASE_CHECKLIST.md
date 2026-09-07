@@ -2,7 +2,7 @@
 
 **Release:** `v0.1.0`  
 **Published:** 2026-09-07  
-**Status:** GitHub release complete; Zenodo DOI pending.
+**Status:** GitHub release complete; Zenodo DOI recorded.
 
 ## Specification
 
@@ -25,7 +25,7 @@ The release workflow validated the schema, conforming fixtures, non-conforming f
 - [x] Confirm `LICENSE.md` is present and accurate.
 - [x] Confirm `CONTRIBUTING.md` describes the change-proposal process.
 - [x] Confirm `CHANGELOG.md` has a `v0.1.0` entry.
-- [x] Confirm `CITATION.cff` matches the release tag and release date.
+- [x] Confirm `CITATION.cff` matches the release tag, release date, and Zenodo DOI.
 - [x] Confirm author, ORCID, copyright, and maintainer information are current.
 - [x] Clarify that CC BY 4.0 does not imply Spatialdom endorsement or certification of third-party implementations.
 
@@ -40,9 +40,13 @@ Release: https://github.com/spatialdom/ptr/releases/tag/v0.1.0
 
 ## Zenodo / DOI
 
-- [ ] Connect or sync the public `spatialdom/ptr` repository with Zenodo.
-- [ ] Archive GitHub release `v0.1.0` in Zenodo.
-- [ ] Record the Zenodo version DOI.
-- [ ] Update `CITATION.cff` with the DOI and final preferred citation.
-- [ ] Update README and release notes with the DOI.
-- [ ] Verify the DOI resolves to the archived `v0.1.0` record.
+- [x] Connect or sync the public `spatialdom/ptr` repository with Zenodo.
+- [x] Archive GitHub release `v0.1.0` in Zenodo.
+- [x] Record the Zenodo version DOI.
+- [x] Update `CITATION.cff` with the DOI and final preferred citation.
+- [x] Update README and release notes with the DOI.
+- [x] Verify the DOI resolves to the archived `v0.1.0` record.
+
+Version DOI: https://doi.org/10.5281/zenodo.22641884  
+Concept DOI: https://doi.org/10.5281/zenodo.22641883  
+Zenodo record: https://zenodo.org/records/22641884

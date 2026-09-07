@@ -43,9 +43,14 @@ Third parties may implement and commercially use PTR subject to the license term
 
 ## Citation
 
-Until the Zenodo DOI is minted, cite this versioned GitHub release using the metadata in `CITATION.cff`.
+Preferred release citation:
 
-After the release is archived in Zenodo, the DOI will be added to `CITATION.cff` and the preferred citation.
+**Dominic C. Fargas Jr. (2026). Parcel Truth Records v0.1 Specification. Zenodo. https://doi.org/10.5281/zenodo.22641884**
+
+Version DOI: https://doi.org/10.5281/zenodo.22641884  
+Concept DOI for all PTR releases: https://doi.org/10.5281/zenodo.22641883
+
+Cite the version DOI for work that depends on PTR v0.1.0.
 
 ## Important limitation
 

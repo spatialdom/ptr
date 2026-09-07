@@ -9,9 +9,10 @@ authors:
     orcid: "https://orcid.org/0009-0000-4088-7476"
 version: 0.1.0
 date-released: 2026-09-07
+doi: 10.5281/zenodo.22641884
 license: CC-BY-4.0
 repository-code: "https://github.com/spatialdom/ptr"
-url: "https://github.com/spatialdom/ptr"
+url: "https://doi.org/10.5281/zenodo.22641884"
 abstract: "Parcel Truth Records (PTR) is an open, human-readable format for representing one land parcel from its ordered bearing-distance boundary description."
 preferred-citation:
   type: standard
@@ -23,4 +24,5 @@ preferred-citation:
       orcid: "https://orcid.org/0009-0000-4088-7476"
   version: 0.1.0
   date-released: 2026-09-07
-  url: "https://github.com/spatialdom/ptr/releases/tag/v0.1.0"
+  doi: 10.5281/zenodo.22641884
+  url: "https://doi.org/10.5281/zenodo.22641884"
