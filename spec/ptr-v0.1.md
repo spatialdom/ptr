@@ -230,7 +230,30 @@ All course distances:
 - MUST represent documentary source area, not a computed area.
 - MUST be greater than zero.
 
-Writers SHOULD use ordinary decimal JSON numbers for human-authored PTR files. Display precision is a presentation concern and does not change the stored documentary value.
+Zero-length and negative-distance courses are invalid in PTR v0.1. Zero and negative `declared_area` values are also invalid.
+
+PTR numeric values use JSON number syntax. JSON strings such as `"25.4"` MUST NOT be used for distances or areas. JSON does not permit `NaN`, `Infinity`, or `-Infinity`; such values are invalid in PTR v0.1.
+
+Scientific notation is valid JSON number syntax and MAY appear in a PTR file. Writers SHOULD use ordinary decimal JSON numbers for human-authored files because they are easier to inspect and compare by eye.
+
+Trailing zeroes in JSON numbers are not significant. For example, `25.4`, `25.40`, and `25.400` represent the same stored numeric value. Applications MAY display title-style distances using fixed precision such as `0.01 m`, but display precision does not change the stored documentary value.
+
+Stored numeric precision is documentary precision. Implementations MUST NOT infer a higher source precision from trailing zeroes or formatting. Implementations MAY use numeric tolerances when computing derived closure, area, or comparison diagnostics, but those tolerances are application or QA policy and MUST NOT alter the stored documentary values.
+
+PTR v0.1 does not define maximum distance or area values. Implementations MAY apply practical resource, safety, or domain limits, but a value MUST NOT be rejected as non-conforming solely because it is large unless it violates JSON number handling or another requirement in this specification.
+
+Representative numeric examples:
+
+| Value | Context | Valid? | Reason |
+| --- | --- | --- | --- |
+| `25.4` | distance | Yes | Positive JSON number in metres. |
+| `25.40` | distance | Yes | Same numeric value as `25.4`; trailing zero is not significant. |
+| `1e3` | distance | Yes | Scientific notation is valid JSON number syntax. |
+| `0` | distance | No | Distance MUST be greater than zero. |
+| `-1.5` | distance | No | Distance MUST be greater than zero. |
+| `"25.4"` | distance | No | Distance MUST be a JSON number, not a string. |
+| `8000.0` | `declared_area` | Yes | Positive JSON number in square metres. |
+| `0` | `declared_area` | No | Area MUST be greater than zero. |
 
 ## 8. Boundary Order and Closure
 
@@ -247,9 +270,43 @@ The courses in `lines`:
 
 The first course is Line 1 from Point 1 to Point 2. The second course is Line 2 from Point 2 to Point 3. This pattern continues until the final course, which runs from the final numbered point back to Point 1. Clockwise order is the canonical writing convention for PTR v0.1, but an otherwise conforming documentary record that is ordered counterclockwise SHOULD be reported as a geometric QA finding rather than silently reordered.
 
+For a `lines` array with `n` courses, implementations MUST use this numbering convention:
+
+| Array index | Line number | From point | To point |
+| --- | --- | --- | --- |
+| `0` | Line 1 | Point 1 | Point 2 |
+| `1` | Line 2 | Point 2 | Point 3 |
+| `i` | Line `i + 1` | Point `i + 1` | Point `i + 2` |
+| `n - 1` | Line `n` | Point `n` | Point 1 |
+
+Worked rectangular example:
+
+```json
+[
+  ["N", 100.0],
+  ["E", 80.0],
+  ["S", 100.0],
+  ["W", 80.0]
+]
+```
+
+This example is interpreted as:
+
+```text
+Point 2 +---------+ Point 3
+        | Line 2  |
+ Line 1 |         | Line 3
+        | Line 4  |
+Point 1 +---------+ Point 4
+```
+
+The final stored course expresses the documentary intent to return to Point 1. Geometric reconstruction MAY show that the computed endpoint differs from Point 1.
+
 A PTR file stores documentary courses. Numerical reconstruction MAY reveal misclosure because of source precision, transcription error, rounding, or inconsistent records. Implementations MUST NOT silently alter, balance, stretch, rotate, scale, or otherwise change stored documentary courses to force closure.
 
 Implementations MAY compute and report closure diagnostics, adjusted geometry, or quality warnings, but those values are derived computational values and MUST remain distinct from the stored PTR record.
+
+Self-intersection, duplicate nonconsecutive vertices, duplicate consecutive vertices caused by reconstruction, and other degeneracy checks are geometric QA findings in PTR v0.1. They do not by themselves make a structurally and semantically valid PTR record non-conforming. A duplicate consecutive point caused by a zero-length course is different: the zero-length course is invalid because distances MUST be greater than zero.
 
 ## 9. Tie Point and Tie Line
 
@@ -263,11 +320,18 @@ When present, `tie_point`:
 When present, `tie_line`:
 
 - MUST be a course represented as `[bearing, distance]`.
-- MUST describe the course from `tie_point` to the parcel reference point.
+- MUST NOT appear unless `tie_point` is also present.
+- MUST describe the course from `tie_point` to Point 1 of the parcel boundary.
 - MUST use metres for distance.
 - MUST use canonical PTR bearing notation for bearing.
 
-`tie_line` does not replace or prepend to `lines`. Boundary courses in `lines` still define the parcel boundary.
+`tie_point` is a free-text documentary reference in PTR v0.1. It may identify a monument, benchmark, cadastral control point, title reference point, or other source control reference as named by the source record. PTR v0.1 does not assign coordinates, authority metadata, or a control-network identity to `tie_point`.
+
+`tie_line` terminates at Point 1 by convention because Point 1 is the start of the ordered `lines` array. `tie_line` does not replace or prepend to `lines`. Boundary courses in `lines` still define the parcel boundary.
+
+Multiple tie points, multiple tie lines, coordinate-bearing control metadata, coordinate reference systems, and cadastral-control network records are outside PTR v0.1. Applications MAY maintain that information externally and link it to a PTR record.
+
+A PTR record can represent a parcel without `tie_point`, `tie_line`, coordinates, or external control metadata.
 
 ## 10. Documentary and Derived Values
 

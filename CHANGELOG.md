@@ -20,6 +20,9 @@ Release entries should include:
 - Added machine-readable PTR v0.1 JSON Schema.
 - Added v0.1 examples and conformance fixtures.
 - Added repository governance, licensing, citation, and release checklist materials.
+- Clarified numeric units, JSON number serialization, precision, and tolerance guidance.
+- Clarified boundary ordering, point numbering, closure semantics, and geometric QA treatment.
+- Clarified tie point and tie line semantics, including the Point 1 endpoint convention.
 
 ## v0.1.0
 

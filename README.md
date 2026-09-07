@@ -146,7 +146,7 @@ PTR Core is expected to normalize common unambiguous input forms into the canoni
 
 Distances are expressed in **metres**.
 
-Human-readable decimal values are preferred. Title-style output may use 0.01 m precision, but precision and serialization rules will be defined formally in the specification.
+Distances and `declared_area` are positive JSON numbers. Human-readable decimal values are preferred, but JSON scientific notation is permitted by the specification. Title-style output may use 0.01 m precision, but display precision does not change the stored documentary value.
 
 ---
 
@@ -158,10 +158,10 @@ The intended convention is:
 
 - the first course starts at Point 1;
 - points proceed in order around the parcel;
-- boundary lines are described clockwise; and
+- boundary lines are written clockwise; and
 - the final course returns to Point 1.
 
-A parcel description may still contain numerical misclosure because of source precision, transcription, or documentary inconsistencies. PTR stores the documentary courses; closure diagnostics are derived by software.
+A parcel description may still contain numerical misclosure because of source precision, transcription, or documentary inconsistencies. PTR stores the documentary courses; closure diagnostics, counterclockwise winding, self-intersection, and other geometry checks are derived QA findings rather than automatic rewrites.
 
 ---
 
@@ -185,6 +185,14 @@ Typical derived properties include:
 - other geometric or quality diagnostics.
 
 These belong to PTR Core or consuming applications.
+
+---
+
+## Tie points
+
+`tie_point` is optional free-text documentary reference information. `tie_line`, when present, uses the same `[bearing, distance]` course structure and runs from `tie_point` to Point 1 of the parcel boundary.
+
+PTR can represent a parcel without tie information or coordinates. Multiple tie points, control networks, coordinate reference systems, and coordinate-bearing metadata belong outside PTR v0.1.
 
 ---
 

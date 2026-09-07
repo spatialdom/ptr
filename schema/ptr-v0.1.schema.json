@@ -5,6 +5,9 @@
   "description": "Structural and value schema for PTR v0.1 files. Geometric QA such as closure and self-intersection is intentionally outside this schema.",
   "type": "object",
   "required": ["ptr_version", "lines"],
+  "dependentRequired": {
+    "tie_line": ["tie_point"]
+  },
   "properties": {
     "ptr_version": {
       "type": "string",
