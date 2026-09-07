@@ -250,6 +250,11 @@ Expected contents include:
 
 ```text
 README.md
+CHANGELOG.md
+CITATION.cff
+CONTRIBUTING.md
+LICENSE.md
+RELEASE_CHECKLIST.md
 spec/
   ptr-v0.1.md
 schema/
@@ -268,13 +273,11 @@ Implementation libraries and applications should live in their own repositories 
 
 The immediate goals are to:
 
-- formalize the normative PTR v0.1 specification;
-- define canonical bearing grammar and normalization expectations;
-- define units, precision, course ordering, and closure semantics;
-- formalize tie-point and tie-line behavior;
-- define validation and conformance expectations;
-- document versioning and compatibility policy; and
-- select the final license and prepare the first public release.
+- review the normative PTR v0.1 specification before release;
+- validate the JSON Schema and conformance fixtures;
+- finalize any release-blocking errata;
+- publish the `v0.1.0` release tag; and
+- archive a stable release citation if a DOI is desired.
 
 See the repository issues for the working backlog.
 
@@ -292,10 +295,12 @@ Do not treat a `.ptr` file or PTR-derived computation as a substitute for an aut
 
 ## License
 
-PTR is intended to be openly documented and broadly implementable. The exact license for the specification and repository will be finalized before the first public release.
+The PTR specification, schemas, examples, tests, and documentation are licensed under CC BY 4.0. See `LICENSE.md`.
+
+If future repository contents include executable source code, that code should declare its own source-code license explicitly.
 
 ---
 
 ## Maintainer
 
-PTR is initiated and maintained by **Spatialdom**.
+PTR is initiated and maintained by **Spatialdom**. Change proposals should be opened as GitHub issues and reviewed against the compatibility policy in the v0.1 specification and `CONTRIBUTING.md`.

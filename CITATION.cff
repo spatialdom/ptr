@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+title: Parcel Truth Records
+message: "If you use PTR in software, data publication, or research, cite the archived release that matches the PTR version you used."
+type: standard
+authors:
+  - name: Spatialdom
+version: 0.1.0
+date-released: 2026-09-07
+license: CC-BY-4.0
+repository-code: "https://github.com/spatialdom/ptr"
+url: "https://github.com/spatialdom/ptr"
+abstract: "Parcel Truth Records (PTR) is an open, human-readable format for representing one land parcel from its ordered bearing-distance boundary description."
+preferred-citation:
+  type: standard
+  title: Parcel Truth Records v0.1 Specification
+  authors:
+    - name: Spatialdom
+  version: 0.1.0
+  date-released: 2026-09-07
+  url: "https://github.com/spatialdom/ptr/releases/tag/v0.1.0"

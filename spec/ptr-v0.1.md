@@ -60,6 +60,20 @@ For PTR v0.1, `ptr_version`:
 
 Readers that implement only PTR v0.1 MUST reject records with a different `ptr_version` value.
 
+### 4.1 Versioning Policy
+
+`ptr_version` identifies the PTR record format version, not an implementation, library, application, schema publication, or repository release.
+
+PTR format versions use `major.minor` strings. Patch-level repository releases MAY update documentation, examples, schemas, errata, or non-normative guidance without changing `ptr_version`.
+
+A breaking format change is any change that requires a conforming reader for an earlier PTR version to reject, reinterpret, or lose information from a previously conforming record. Breaking changes require a new major version.
+
+Non-breaking changes MAY include clarifications, additional examples, additional optional fields that old readers may preserve as unknown fields, stricter conformance text that codifies existing intent, or new non-authoritative derived diagnostics outside the `.ptr` record.
+
+Draft and experimental formats MUST NOT use the stable `ptr_version` value `"0.1"` unless they conform to this specification. Experimental formats SHOULD use an application-specific marker outside PTR v0.1, a pre-release repository branch, or a clearly identified future draft such as `0.2-draft`; such values are not conforming PTR v0.1 `ptr_version` values.
+
+Repository release tags for this specification SHOULD use the form `v0.1.0`, `v0.1.1`, and so on. The tag prefix `v` identifies a repository release; the record value remains `"0.1"`.
+
 ## 5. Courses
 
 A course is the canonical bearing-distance representation:
