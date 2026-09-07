@@ -1,33 +1,48 @@
 # PTR v0.1 Release Checklist
 
-Use this checklist before publishing the first public `v0.1.0` release.
+**Release:** `v0.1.0`  
+**Published:** 2026-09-07  
+**Status:** GitHub release complete; Zenodo DOI pending.
 
 ## Specification
 
-- [ ] Confirm `spec/ptr-v0.1.md` is internally consistent.
-- [ ] Confirm all normative `MUST`, `SHOULD`, and `MAY` requirements are intentional.
-- [ ] Confirm PTR v0.1 does not imply legal authority or replace professional survey, cadastral, title, or land-administration determinations.
-- [ ] Confirm future v1.0 compatibility path is clear.
+- [x] Confirm `spec/ptr-v0.1.md` is internally consistent.
+- [x] Confirm all normative `MUST`, `SHOULD`, and `MAY` requirements are intentional.
+- [x] Confirm PTR v0.1 does not imply legal authority or replace professional survey, cadastral, title, or land-administration determinations.
+- [x] Confirm future v1.0 compatibility path is clear.
 
-## Schema And Fixtures
+## Schema and Fixtures
 
-- [ ] Validate `schema/ptr-v0.1.schema.json` with a Draft 2020-12 JSON Schema implementation.
-- [ ] Confirm valid examples pass the schema.
-- [ ] Confirm invalid examples fail at the expected validation layer.
-- [ ] Confirm geometric QA fixtures remain structurally and semantically valid.
+- [x] Validate `schema/ptr-v0.1.schema.json` as JSON Schema Draft 2020-12.
+- [x] Confirm valid examples and conformance fixtures pass the schema.
+- [x] Confirm invalid fixtures fail at the expected serialization/schema-validation layer.
+- [x] Confirm geometric QA fixtures remain structurally and semantically conforming.
+
+The release workflow validated the schema, conforming fixtures, non-conforming fixtures, citation metadata, ORCID checksum, and release-version references before publishing the GitHub release.
 
 ## Repository Metadata
 
-- [ ] Confirm `LICENSE.md` is present and accurate.
-- [ ] Confirm `CONTRIBUTING.md` describes the change-proposal process.
-- [ ] Confirm `CHANGELOG.md` has a `v0.1.0` entry.
-- [ ] Confirm `CITATION.cff` matches the final release tag, date, and DOI if one is minted.
-- [ ] Confirm copyright and maintainer information are current.
+- [x] Confirm `LICENSE.md` is present and accurate.
+- [x] Confirm `CONTRIBUTING.md` describes the change-proposal process.
+- [x] Confirm `CHANGELOG.md` has a `v0.1.0` entry.
+- [x] Confirm `CITATION.cff` matches the release tag and release date.
+- [x] Confirm author, ORCID, copyright, and maintainer information are current.
+- [x] Clarify that CC BY 4.0 does not imply Spatialdom endorsement or certification of third-party implementations.
 
-## Release
+## GitHub Release
 
-- [ ] Create the release tag `v0.1.0`.
-- [ ] Publish a GitHub release named `PTR v0.1.0`.
-- [ ] Archive the release with Zenodo or another DOI provider if a DOI is desired.
-- [ ] Update `CITATION.cff` and the GitHub release notes with the DOI.
-- [ ] Verify that public links to the specification, schema, examples, and tests resolve.
+- [x] Create release tag `v0.1.0`.
+- [x] Publish GitHub release **Parcel Truth Records (PTR) v0.1.0**.
+- [x] Verify the release is not a draft.
+- [x] Verify public links to the specification, schema, examples, tests, license, and citation metadata resolve.
+
+Release: https://github.com/spatialdom/ptr/releases/tag/v0.1.0
+
+## Zenodo / DOI
+
+- [ ] Connect or sync the public `spatialdom/ptr` repository with Zenodo.
+- [ ] Archive GitHub release `v0.1.0` in Zenodo.
+- [ ] Record the Zenodo version DOI.
+- [ ] Update `CITATION.cff` with the DOI and final preferred citation.
+- [ ] Update README and release notes with the DOI.
+- [ ] Verify the DOI resolves to the archived `v0.1.0` record.
