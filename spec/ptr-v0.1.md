@@ -226,12 +226,12 @@ The courses in `lines`:
 
 - MUST contain at least three courses.
 - MUST be ordered around the parcel boundary.
-- SHOULD be ordered clockwise.
+- SHOULD be written in clockwise order.
 - MUST be interpreted as starting at Point 1.
 - MUST define each subsequent point by applying the next course in array order.
 - MUST interpret the final course as the documentary course intended to return to Point 1.
 
-The first course is Line 1 from Point 1 to Point 2. The second course is Line 2 from Point 2 to Point 3. This pattern continues until the final course, which runs from the final numbered point back to Point 1.
+The first course is Line 1 from Point 1 to Point 2. The second course is Line 2 from Point 2 to Point 3. This pattern continues until the final course, which runs from the final numbered point back to Point 1. Clockwise order is the canonical writing convention for PTR v0.1, but an otherwise conforming documentary record that is ordered counterclockwise SHOULD be reported as a geometric QA finding rather than silently reordered.
 
 A PTR file stores documentary courses. Numerical reconstruction MAY reveal misclosure because of source precision, transcription error, rounding, or inconsistent records. Implementations MUST NOT silently alter, balance, stretch, rotate, scale, or otherwise change stored documentary courses to force closure.
 
