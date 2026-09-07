@@ -1,0 +1,127 @@
+name: Validate and publish PTR v0.1.0
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/release-v0.1.0.yml
+
+permissions:
+  contents: write
+
+jobs:
+  validate-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install validation dependencies
+        run: python -m pip install --disable-pip-version-check jsonschema PyYAML
+
+      - name: Validate PTR schema, fixtures, and citation metadata
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import yaml
+          from jsonschema import Draft202012Validator
+
+          root = Path('.')
+          schema_path = root / 'schema' / 'ptr-v0.1.schema.json'
+          schema = json.loads(schema_path.read_text(encoding='utf-8'))
+          Draft202012Validator.check_schema(schema)
+          validator = Draft202012Validator(schema)
+
+          valid_paths = []
+          valid_paths += list((root / 'examples').glob('**/*.ptr'))
+          valid_paths += list((root / 'tests' / 'valid').glob('**/*.ptr'))
+          valid_paths += list((root / 'tests' / 'closure').glob('**/*.ptr'))
+          valid_paths += list((root / 'tests' / 'tie_points').glob('**/*.ptr'))
+          valid_paths += list((root / 'tests' / 'edge_cases').glob('**/*.ptr'))
+          valid_paths += [p for p in (root / 'tests' / 'bearings').glob('*.ptr') if not p.name.startswith('invalid-')]
+
+          invalid_paths = []
+          invalid_paths += list((root / 'tests' / 'invalid').glob('**/*.ptr'))
+          invalid_paths += list((root / 'tests' / 'bearings').glob('invalid-*.ptr'))
+          invalid_paths += list((root / 'tests' / 'ambiguous').glob('*stored*.ptr'))
+
+          if not valid_paths:
+              raise SystemExit('No valid PTR fixtures found.')
+          if not invalid_paths:
+              raise SystemExit('No invalid PTR fixtures found.')
+
+          for path in sorted(set(valid_paths)):
+              try:
+                  data = json.loads(path.read_text(encoding='utf-8'))
+              except Exception as exc:
+                  raise SystemExit(f'Expected valid JSON but could not parse {path}: {exc}') from exc
+              errors = sorted(validator.iter_errors(data), key=lambda e: list(e.path))
+              if errors:
+                  messages = '; '.join(error.message for error in errors)
+                  raise SystemExit(f'Expected conforming fixture failed schema: {path}: {messages}')
+
+          for path in sorted(set(invalid_paths)):
+              try:
+                  data = json.loads(path.read_text(encoding='utf-8'))
+              except json.JSONDecodeError:
+                  continue
+              errors = list(validator.iter_errors(data))
+              if not errors:
+                  raise SystemExit(f'Expected non-conforming fixture unexpectedly passed schema: {path}')
+
+          cff = yaml.safe_load((root / 'CITATION.cff').read_text(encoding='utf-8'))
+          assert cff['cff-version'] == '1.2.0'
+          assert cff['type'] == 'standard'
+          assert str(cff['version']) == '0.1.0'
+          assert str(cff['date-released']) == '2026-09-07'
+          assert cff['license'] == 'CC-BY-4.0'
+          author = cff['authors'][0]
+          assert author['family-names'] == 'Fargas'
+          assert author['given-names'] == 'Dominic C.'
+          assert author['name-suffix'] == 'Jr.'
+          assert author['orcid'] == 'https://orcid.org/0009-0000-4088-7476'
+          assert cff['preferred-citation']['url'].endswith('/releases/tag/v0.1.0')
+
+          def valid_orcid(orcid_url: str) -> bool:
+              value = orcid_url.rsplit('/', 1)[-1].replace('-', '')
+              total = 0
+              for char in value[:-1]:
+                  total = (total + int(char)) * 2
+              result = (12 - (total % 11)) % 11
+              expected = 'X' if result == 10 else str(result)
+              return value[-1] == expected
+
+          assert valid_orcid(author['orcid'])
+
+          readme = (root / 'README.md').read_text(encoding='utf-8')
+          changelog = (root / 'CHANGELOG.md').read_text(encoding='utf-8')
+          specification = (root / 'spec' / 'ptr-v0.1.md').read_text(encoding='utf-8')
+          assert 'v0.1.0' in readme
+          assert 'v0.1.0 — 2026-09-07' in changelog
+          assert '**Repository release:** `v0.1.0`' in specification
+
+          print(f'Validated {len(set(valid_paths))} conforming fixtures.')
+          print(f'Validated {len(set(invalid_paths))} non-conforming fixtures.')
+          print('PTR v0.1.0 release checks passed.')
+          PY
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view v0.1.0 >/dev/null 2>&1; then
+            echo "Release v0.1.0 already exists; leaving it unchanged."
+          else
+            gh release create v0.1.0 \
+              --target "${GITHUB_SHA}" \
+              --title "Parcel Truth Records (PTR) v0.1.0" \
+              --notes-file RELEASE_NOTES_v0.1.0.md
+          fi
