@@ -86,15 +86,115 @@ S
 W
 N68-28E
 S11-44W
+N68-28-30E
 ```
 
-At a high level, PTR v0.1 bearings identify cardinal directions or quadrant bearings. A quadrant bearing starts with `N` or `S`, contains an angular offset, and ends with `E` or `W`.
+PTR v0.1 bearings identify cardinal directions or quadrant bearings.
+
+### 6.1 Canonical Bearing Grammar
+
+The canonical stored bearing syntax is:
+
+```abnf
+bearing          = cardinal / quadrant
+cardinal         = "N" / "E" / "S" / "W"
+quadrant         = ns degrees "-" minutes [ "-" seconds ] ew
+ns               = "N" / "S"
+ew               = "E" / "W"
+degrees          = "0" / nonzero-digit / nonzero-digit digit
+minutes          = digit digit
+seconds          = digit digit
+digit            = "0" / "1" / "2" / "3" / "4" / "5" / "6" / "7" / "8" / "9"
+nonzero-digit    = "1" / "2" / "3" / "4" / "5" / "6" / "7" / "8" / "9"
+```
+
+The grammar above is further constrained by these numeric rules:
+
+- `degrees` MUST be an integer from `0` through `89`.
+- `degrees` MUST NOT contain leading zeroes, except for the single value `0`.
+- `minutes` MUST be an integer from `00` through `59` and MUST contain exactly two digits.
+- `seconds`, when present, MUST be an integer from `01` through `59` and MUST contain exactly two digits.
+- A quadrant bearing's angular offset MUST be greater than 0 degrees and less than 90 degrees.
+
+The canonical syntax is case-sensitive. Canonical bearings MUST use uppercase `N`, `E`, `S`, and `W`, ASCII hyphen-minus (`-`) separators, and no whitespace.
+
+### 6.2 Cardinal Bearings
+
+The only legal canonical cardinal bearings are:
+
+```text
+N
+E
+S
+W
+```
+
+Cardinal bearings are not quadrant bearings. Equivalent quadrant forms such as `N0-00E`, `S0-00W`, `N90-00E`, or `S90-00E` are not canonical and MUST be rejected as stored PTR values.
+
+### 6.3 Quadrant Bearings
+
+A quadrant bearing starts with `N` or `S`, contains an angular offset east or west from that north-south axis, and ends with `E` or `W`.
+
+Canonical quadrant examples include:
+
+```text
+N0-01E
+N68-28E
+S11-44W
+S89-59-59E
+```
+
+Seconds are supported in PTR v0.1 only when they are nonzero. A bearing with zero seconds MUST omit the seconds component; for example, `N68-28E` is canonical and `N68-28-00E` is not.
+
+### 6.4 Input Normalization
+
+Conforming PTR v0.1 files MUST store canonical bearing strings. Applications MAY accept and normalize common unambiguous input forms before writing a PTR file. Normalization is a parser feature; it does not change the canonical stored syntax.
+
+Implementations MAY normalize all of the following input variations when the result is unambiguous:
+
+- Lowercase or mixed-case direction letters.
+- Leading and trailing whitespace around the whole input.
+- Whitespace between direction letters and numeric components.
+- A degree symbol (`deg`), lowercase `d`, or uppercase `D` between degrees and minutes.
+- An apostrophe (`'`), typographic prime, lowercase `m`, or uppercase `M` after minutes.
+- A quotation mark (`"`), typographic double-prime, lowercase `s`, or uppercase `S` after seconds.
+- Hyphen-minus separators in place of degree, minute, and second markers.
+- Omitted seconds when the bearing has only degrees and minutes.
+
+Accepted input examples and their canonical normalized values:
+
+| Input | Canonical value |
+| --- | --- |
+| `n68-28e` | `N68-28E` |
+| `N 68 28 E` | `N68-28E` |
+| `N 68 deg 28' E` | `N68-28E` |
+| `N68d28m30sE` | `N68-28-30E` |
+| `S 11 D 44 M 00 S W` | `S11-44W` |
+| ` e ` | `E` |
 
 Applications MAY display a canonical value such as `N68-28E` as a more human-friendly form such as `N 68 deg 28' E`, provided the stored PTR value remains canonical.
 
-The exact serialized grammar, valid ranges, case rules, optional seconds support, whitespace rules, and normalization behavior are tracked by the canonical bearing grammar work in https://github.com/spatialdom/ptr/issues/3. Until that grammar is finalized, conforming PTR v0.1 documents SHOULD use only uppercase cardinal letters and the ASCII hyphenated minute form shown above.
+### 6.5 Invalid or Ambiguous Bearings
 
 Implementations MUST reject ambiguous bearings rather than guessing the user's intent.
+
+The following examples are invalid as canonical stored PTR values and SHOULD be rejected or normalized before storage, as indicated:
+
+| Input | Reason |
+| --- | --- |
+| `n68-28e` | Not canonical because direction letters are lowercase; may normalize to `N68-28E`. |
+| `N 68 28 E` | Not canonical because it contains whitespace; may normalize to `N68-28E`. |
+| `N068-28E` | Not canonical because degrees contain leading zeroes. |
+| `N68-7E` | Minutes MUST contain exactly two digits. |
+| `N68-60E` | Minutes are out of range. |
+| `N68-28-00E` | Zero seconds MUST be omitted; may normalize to `N68-28E`. |
+| `N68-28-60E` | Seconds are out of range. |
+| `N0-00E` | Zero angular offset is represented by a cardinal bearing, not a quadrant bearing. |
+| `N90-00E` | Ninety-degree offset is represented by a cardinal bearing, not a quadrant bearing. |
+| `E68-28N` | Quadrant bearings MUST start with `N` or `S` and end with `E` or `W`. |
+| `NE68-28` | Direction letters are not in canonical quadrant positions. |
+| `68-28NE` | Direction letters are not in canonical quadrant positions. |
+| `N68E28` | Component order is ambiguous. |
 
 ## 7. Distances and Areas
 

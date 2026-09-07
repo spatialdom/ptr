@@ -140,7 +140,7 @@ as:
 N 68°28' E
 ```
 
-PTR Core is expected to normalize common unambiguous input forms into the canonical representation while rejecting ambiguous input. The exact grammar and normalization rules will be formalized in the v0.1 specification.
+PTR Core is expected to normalize common unambiguous input forms into the canonical representation while rejecting ambiguous input. The normative grammar and normalization rules are defined in the v0.1 specification.
 
 ### Distances
 
