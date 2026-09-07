@@ -50,6 +50,8 @@ Preferred release citation:
 Version DOI: https://doi.org/10.5281/zenodo.22641884  
 Concept DOI for all PTR releases: https://doi.org/10.5281/zenodo.22641883
 
+Archived DOI: https://doi.org/10.5281/zenodo.22641884
+
 Cite the version DOI for work that depends on PTR v0.1.0.
 
 ## Important limitation

@@ -7,6 +7,8 @@
 **Author / originator:** Dominic C. Fargas Jr. — ORCID: https://orcid.org/0009-0000-4088-7476  
 **Maintainer:** Spatialdom
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22641884.svg)](https://doi.org/10.5281/zenodo.22641884)
+
 Parcel Truth Records (PTR) is an open, human-readable format for representing **one land parcel from its ordered bearing-distance boundary description**.
 
 PTR is parcel-native and survey-native. It is designed for the measurements commonly found in land titles, survey records, and technical descriptions while remaining small enough to read and edit in a basic text editor.
@@ -273,7 +275,7 @@ See [`CHANGELOG.md`](CHANGELOG.md).
 
 ---
 
-## Citation
+## Cite PTR
 
 Citation metadata is provided in [`CITATION.cff`](CITATION.cff).
 
