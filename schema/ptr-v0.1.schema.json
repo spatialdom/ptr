@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://spatialdom.github.io/ptr/schema/ptr-v0.1.schema.json",
+  "title": "Parcel Truth Records v0.1",
+  "description": "Structural and value schema for PTR v0.1 files. Geometric QA such as closure and self-intersection is intentionally outside this schema.",
+  "type": "object",
+  "required": ["ptr_version", "lines"],
+  "properties": {
+    "ptr_version": {
+      "type": "string",
+      "const": "0.1"
+    },
+    "lines": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "$ref": "#/$defs/course"
+      }
+    },
+    "name": {
+      "type": "string"
+    },
+    "record_id": {
+      "type": "string"
+    },
+    "tie_point": {
+      "type": "string"
+    },
+    "tie_line": {
+      "$ref": "#/$defs/course"
+    },
+    "declared_area": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "course": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/bearing"
+        },
+        {
+          "$ref": "#/$defs/distance"
+        }
+      ],
+      "items": false,
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "bearing": {
+      "type": "string",
+      "pattern": "^(?:[NESW]|[NS](?:(?:[1-9]|[1-8][0-9])-[0-5][0-9](?:-(?:0[1-9]|[1-5][0-9]))?|0-(?:(?:0[1-9]|[1-5][0-9])(?:-(?:0[1-9]|[1-5][0-9]))?|00-(?:0[1-9]|[1-5][0-9])))[EW])$"
+    },
+    "distance": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    }
+  }
+}

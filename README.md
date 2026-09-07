@@ -258,6 +258,8 @@ examples/
 tests/
 ```
 
+The schema provides machine-readable structural validation for PTR v0.1. The examples and tests directories provide reusable conformance fixtures, including valid records, invalid records, ambiguous input cases, and geometric QA cases.
+
 Implementation libraries and applications should live in their own repositories and consume the specification defined here.
 
 ---
@@ -270,8 +272,6 @@ The immediate goals are to:
 - define canonical bearing grammar and normalization expectations;
 - define units, precision, course ordering, and closure semantics;
 - formalize tie-point and tie-line behavior;
-- publish a machine-readable JSON Schema;
-- create valid, invalid, and edge-case examples;
 - define validation and conformance expectations;
 - document versioning and compatibility policy; and
 - select the final license and prepare the first public release.
