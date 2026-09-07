@@ -1,57 +1,43 @@
 # Parcel Truth Records (PTR)
 
-**Status:** Draft specification, v0.1  
-**Maintainer:** Spatialdom  
-**File extension:** `.ptr`
+**Status:** Published v0.1 baseline (pre-stable)  
+**PTR format version:** `0.1`  
+**Repository release:** `v0.1.0`  
+**File extension:** `.ptr`  
+**Author / originator:** Dominic C. Fargas Jr. — ORCID: https://orcid.org/0009-0000-4088-7476  
+**Maintainer:** Spatialdom
 
 Parcel Truth Records (PTR) is an open, human-readable format for representing **one land parcel from its ordered bearing-distance boundary description**.
 
-PTR is designed for parcel work first. It takes inspiration from simple interchange formats such as GeoJSON, but it is intentionally contextualized for land parcels and for the measurements commonly found in land titles, survey records, and technical descriptions.
+PTR is parcel-native and survey-native. It is designed for the measurements commonly found in land titles, survey records, and technical descriptions while remaining small enough to read and edit in a basic text editor.
 
 > GeoJSON says: “Here is a geometry.”  
 > PTR says: “Here is a parcel, and this is how its boundary was described.”
 
-The `.ptr` file is only the foundation. PTR-aware software can reconstruct geometry, validate closure, compute parcel metrics, compare parcels, georeference descriptions, and connect parcels to external urban and land-information datasets.
+The `.ptr` file is deliberately only the foundation. PTR-aware software can reconstruct geometry, validate a parcel description, compute metrics, compare parcels, georeference them when external control is available, and connect the resulting parcel to external contextual datasets.
 
 ---
 
 ## Why PTR?
 
-Common GIS formats are intentionally generic. They can represent parcels, roads, rivers, buildings, points, and many other geographic objects.
+General GIS formats are intentionally broad. They can describe parcels, roads, rivers, buildings, points, and many other geographic objects.
 
-PTR is deliberately narrower.
+PTR is intentionally narrower: **it represents a parcel as a parcel**.
 
-It represents a **parcel as a parcel**.
+That allows software to provide parcel-native behavior while keeping the underlying record portable and application-independent.
 
-That allows software to attach parcel-native behavior to the data while keeping the underlying file small, portable, readable, and application-independent.
-
-PTR is intended to support workflows such as:
+Typical PTR-aware workflows may include:
 
 - plotting a technical description;
-- checking closure;
+- checking closure and misclosure;
 - computing area and perimeter;
 - validating and normalizing bearing-distance courses;
 - comparing parcel descriptions;
-- converting a parcel into conventional GIS geometry;
-- working with parcel collections through PTRC; and
-- linking parcel geometry to external contextual datasets.
+- converting derived parcel geometry to conventional GIS formats;
+- working with many parcels through PTRC; and
+- linking parcels to external land, urban, environmental, infrastructure, or market information.
 
-PTR itself should remain simple. Ownership, taxation, zoning, hazards, buildings, valuation, imagery, and other contextual information are **not automatically part of PTR** merely because they relate to a parcel. Those datasets should remain external and be linked to the parcel when needed.
-
----
-
-## Design goals
-
-PTR v0.1 is guided by the following principles:
-
-1. **Parcel-native** — the format represents a land parcel, not an arbitrary geometry.
-2. **Survey-native** — boundary courses are stored as bearings and distances rather than requiring coordinates.
-3. **Human-readable** — a `.ptr` file should be understandable and editable in a basic text editor.
-4. **ASCII-safe input** — canonical bearing notation should not require typing a degree symbol.
-5. **Minimal** — store the documentary parcel description; derive computational properties when needed.
-6. **Portable** — the file should not depend on a particular application, database, or service.
-7. **Deterministic** — the same valid record should reconstruct the same relative parcel geometry.
-8. **Extensible through software, not field accumulation** — advanced behavior belongs primarily in PTR Core, PTRC, and applications rather than by turning `.ptr` into a giant cadastral schema.
+PTR itself should remain simple. Ownership, taxation, zoning, hazards, buildings, valuation, imagery, infrastructure, and other contextual information are **not automatically part of PTR** merely because they relate to a parcel.
 
 ---
 
@@ -63,7 +49,7 @@ PTR v0.1 uses UTF-8 JSON.
 
 | Field | Type | Meaning |
 |---|---|---|
-| `ptr_version` | string | PTR format version. For this draft: `"0.1"`. |
+| `ptr_version` | string | PTR format version. For this specification: `"0.1"`. |
 | `lines` | array | Ordered parcel boundary courses. Each course is `[bearing, distance]`. |
 
 ### Optional fields
@@ -71,14 +57,12 @@ PTR v0.1 uses UTF-8 JSON.
 | Field | Type | Meaning |
 |---|---|---|
 | `name` | string | Human-readable parcel name, such as `Lot 2173` or `Lot 6 Block 72`. |
-| `record_id` | string | Optional application/database identifier. It is not required to define the parcel itself. |
-| `tie_point` | string | Human-readable reference to the tie point used by the source description. |
-| `tie_line` | array | Bearing-distance course from the tie point to the parcel reference point. |
+| `record_id` | string | Optional application/database identifier; not required to define the parcel. |
+| `tie_point` | string | Documentary reference to the tie point used by the source description. |
+| `tie_line` | array | Bearing-distance course from the tie point to Point 1 of the parcel. |
 | `declared_area` | number | Documentary parcel area in square metres. |
 
----
-
-## Example
+### Example
 
 ```json
 {
@@ -87,19 +71,18 @@ PTR v0.1 uses UTF-8 JSON.
   "tie_point": "BLLM No. 1, Cad-123",
   "tie_line": ["S11-44W", 2351.00],
   "lines": [
-    ["S04-47E", 79.70],
-    ["S89-37W", 67.41],
-    ["N03-07W", 27.93]
+    ["N", 100.00],
+    ["E", 80.00],
+    ["S", 100.00],
+    ["W", 80.00]
   ],
-  "declared_area": 10000.00
+  "declared_area": 8000.00
 }
 ```
 
-This example illustrates the structure only; it is not intended to represent a complete real-world parcel.
-
 ---
 
-## Boundary courses
+## Bearings and distances
 
 The canonical course representation is:
 
@@ -113,11 +96,7 @@ Example:
 ["N68-28E", 25.40]
 ```
 
-### Bearings
-
-PTR v0.1 uses an ASCII-safe canonical notation.
-
-Examples:
+Canonical bearings are ASCII-safe. Examples include:
 
 ```text
 N
@@ -126,9 +105,10 @@ S
 W
 N68-28E
 S11-44W
+N68-28-30E
 ```
 
-Applications may display a canonical value such as:
+Applications may display:
 
 ```text
 N68-28E
@@ -140,40 +120,41 @@ as:
 N 68°28' E
 ```
 
-PTR Core is expected to normalize common unambiguous input forms into the canonical representation while rejecting ambiguous input. The normative grammar and normalization rules are defined in the v0.1 specification.
+The normative bearing grammar and normalization behavior are defined in [`spec/ptr-v0.1.md`](spec/ptr-v0.1.md). Non-canonical but unambiguous human input may be normalized by software before serialization; ambiguous input must be rejected rather than guessed.
 
-### Distances
-
-Distances are expressed in **metres**.
-
-Distances and `declared_area` are positive JSON numbers. Human-readable decimal values are preferred, but JSON scientific notation is permitted by the specification. Title-style output may use 0.01 m precision, but display precision does not change the stored documentary value.
+All distances are expressed in **metres**. `declared_area` is expressed in **square metres**.
 
 ---
 
-## Course order and parcel closure
+## Boundary order and closure
 
-Boundary lines are stored in parcel order. Line and point numbering are implicit from the array order rather than repeated in every record.
+Boundary courses are stored in parcel order. Point and line numbering are implicit from array order.
 
-The intended convention is:
+The PTR v0.1 convention is:
 
 - the first course starts at Point 1;
-- points proceed in order around the parcel;
-- boundary lines are written clockwise; and
-- the final course returns to Point 1.
+- points proceed around the parcel in order;
+- clockwise order is the canonical writing convention; and
+- the final course is the documentary course intended to return to Point 1.
 
-A parcel description may still contain numerical misclosure because of source precision, transcription, or documentary inconsistencies. PTR stores the documentary courses; closure diagnostics, counterclockwise winding, self-intersection, and other geometry checks are derived QA findings rather than automatic rewrites.
+A technically recorded parcel may still have numerical misclosure because of source precision, transcription, rounding, or documentary inconsistency. PTR preserves the documentary courses. Software must not silently rewrite or force-adjust the stored record simply to close the geometry.
+
+Closure, self-intersection, winding, area differences, and similar geometry checks are **derived QA findings**.
 
 ---
 
-## Declared vs. computed values
+## Documentary truth vs. derived computation
 
-`declared_area` is documentary information from the source record.
+PTR stores the documentary parcel description.
 
-A computed area is different: it is derived from the reconstructed parcel geometry.
+Typical stored documentary values are:
 
-PTR therefore does not store computed geometry or metrics as authoritative fields in v0.1.
+- parcel name or record identity when supplied;
+- tie point and tie line;
+- ordered boundary courses; and
+- declared documentary area.
 
-Typical derived properties include:
+Typical derived values include:
 
 - vertices;
 - geometry;
@@ -184,44 +165,72 @@ Typical derived properties include:
 - bounding box; and
 - other geometric or quality diagnostics.
 
-These belong to PTR Core or consuming applications.
+Derived values belong to PTR Core or consuming applications. They are not authoritative PTR v0.1 fields.
 
 ---
 
-## Tie points
+## Context stays external
 
-`tie_point` is optional free-text documentary reference information. `tie_line`, when present, uses the same `[bearing, distance]` course structure and runs from `tie_point` to Point 1 of the parcel boundary.
+PTR v0.1 intentionally does **not** attempt to become a complete cadastral or land-administration database.
 
-PTR can represent a parcel without tie information or coordinates. Multiple tie points, control networks, coordinate reference systems, and coordinate-bearing metadata belong outside PTR v0.1.
-
----
-
-## PTR is not a complete land-administration database
-
-PTR v0.1 intentionally does **not** attempt to embed every fact associated with a parcel.
-
-For example, these normally remain outside the `.ptr` record:
+Information such as the following normally remains outside `.ptr`:
 
 - owners or taxpayers;
-- tax declarations;
-- market values;
-- zoning classifications;
+- tax declarations and assessments;
+- title or transaction history;
+- zoning and land use;
 - hazard exposure;
 - buildings and permits;
 - imagery;
-- infrastructure;
-- transaction history; and
-- application-specific workflow state.
+- market valuation;
+- roads and infrastructure; and
+- application workflow state.
 
-Those datasets can be linked to a PTR-derived parcel through spatial joins, identifiers, network relationships, temporal relationships, or other application-level mechanisms.
+External systems can relate these datasets to a PTR-derived parcel through spatial joins, identifiers, temporal relationships, network relationships, or other application-level mechanisms.
 
-This separation keeps the parcel representation stable while allowing many different systems to use it.
+This is a central design principle: **contextual information is not part of PTR merely because it relates to a parcel.**
 
 ---
 
-## Ecosystem
+## Validation model
 
-PTR is intended as the common parcel foundation for a broader ecosystem.
+PTR v0.1 distinguishes file conformance from parcel-quality analysis:
+
+1. **Serialization** — valid UTF-8 JSON.
+2. **Structural** — required fields, types, course shapes, and version.
+3. **Semantic** — valid canonical values and field relationships.
+4. **Geometric QA** — derived findings such as closure, self-intersection, orientation, and area discrepancy.
+
+Serialization, structural, or semantic failures make a record non-conforming. Geometric QA findings do not automatically make an otherwise conforming documentary PTR invalid.
+
+The shared fixture expectations are documented in [`tests/README.md`](tests/README.md).
+
+---
+
+## Specification and schema
+
+The normative specification is:
+
+- [`spec/ptr-v0.1.md`](spec/ptr-v0.1.md)
+
+The machine-readable schema is:
+
+- [`schema/ptr-v0.1.schema.json`](schema/ptr-v0.1.schema.json)
+
+The schema uses JSON Schema Draft 2020-12. It validates structural and expressible semantic requirements but intentionally does not perform geometric reconstruction or QA.
+
+Examples and reusable conformance fixtures are provided under:
+
+```text
+examples/
+tests/
+```
+
+---
+
+## PTR ecosystem
+
+PTR is intended to be the common parcel foundation for a broader ecosystem:
 
 ```text
 Land title / technical description
@@ -240,7 +249,7 @@ Land title / technical description
 Related components may include:
 
 - **PTR Core** — parsing, normalization, validation, computation, comparison, transformation, topology, and export;
-- **PTRC** — a collection format for many PTR records;
+- **PTRC** — PTR Collection for working with many parcel records;
 - **Parcel Plotter** — lightweight plotting and inspection;
 - **PTR Studio** — future professional parcel workspace;
 - **QGIS integrations** — parcel-native workflows inside GIS; and
@@ -250,65 +259,59 @@ The standard stays deliberately small so that the software above it can evolve i
 
 ---
 
-## Repository scope
+## Release and versioning
 
-This repository is intended to contain the **PTR standard**, not the full application stack.
+PTR format versions use the `major.minor` value stored in `ptr_version`. Repository releases use semantic-style tags such as `v0.1.0`.
 
-Expected contents include:
+The first published repository baseline is:
 
-```text
-README.md
-CHANGELOG.md
-CITATION.cff
-CONTRIBUTING.md
-LICENSE.md
-RELEASE_CHECKLIST.md
-spec/
-  ptr-v0.1.md
-schema/
-  ptr-v0.1.schema.json
-examples/
-tests/
-```
+**Parcel Truth Records (PTR) v0.1.0 — 7 September 2026**
 
-The schema provides machine-readable structural validation for PTR v0.1. The examples and tests directories provide reusable conformance fixtures, including valid records, invalid records, ambiguous input cases, and geometric QA cases.
+PTR v0.1 is intentionally pre-stable and is being published so it can be implemented, tested, cited, and scrutinized. The meaning of a released `0.1` record should not be silently changed. Future incompatible format changes require a new PTR format version.
 
-Implementation libraries and applications should live in their own repositories and consume the specification defined here.
+See [`CHANGELOG.md`](CHANGELOG.md).
 
 ---
 
-## Current v0.1 roadmap
+## Citation
 
-The immediate goals are to:
+Citation metadata is provided in [`CITATION.cff`](CITATION.cff).
 
-- review the normative PTR v0.1 specification before release;
-- validate the JSON Schema and conformance fixtures;
-- finalize any release-blocking errata;
-- publish the `v0.1.0` release tag; and
-- archive a stable release citation if a DOI is desired.
+Preferred author attribution:
 
-See the repository issues for the working backlog.
+**Dominic C. Fargas Jr.**  
+ORCID: https://orcid.org/0009-0000-4088-7476
 
----
+The `v0.1.0` GitHub release is intended to be archived in Zenodo. Once Zenodo assigns the release DOI, the DOI will be added to `CITATION.cff` and the recommended citation.
 
-## Status and stability
-
-PTR v0.1 is an early baseline intended for implementation, testing, and refinement.
-
-The design is intentionally small enough to use now, but details may change before a stable v1.0 specification is published.
-
-Do not treat a `.ptr` file or PTR-derived computation as a substitute for an authoritative survey, cadastral record, land title, or professional determination where one is legally required.
+Until the DOI is available, cite the versioned GitHub release rather than an unversioned `main` branch.
 
 ---
 
-## License
+## License and implementation freedom
 
-The PTR specification, schemas, examples, tests, and documentation are licensed under CC BY 4.0. See `LICENSE.md`.
+The PTR specification, schemas, examples, tests, and documentation are licensed under **CC BY 4.0**. See [`LICENSE.md`](LICENSE.md).
 
-If future repository contents include executable source code, that code should declare its own source-code license explicitly.
+This allows sharing, adaptation, implementation, and commercial reuse subject to the attribution requirements of CC BY 4.0.
+
+Third parties may accurately state that their products support or implement PTR. The license does not grant rights to use Spatialdom branding in a way that implies certification, sponsorship, endorsement, or official approval.
+
+The open standard is intentionally separate from implementation licensing. **PTR Core** and other executable software may use their own software licenses.
 
 ---
 
-## Maintainer
+## Governance and contributions
 
-PTR is initiated and maintained by **Spatialdom**. Change proposals should be opened as GitHub issues and reviewed against the compatibility policy in the v0.1 specification and `CONTRIBUTING.md`.
+PTR is initiated by **Dominic C. Fargas Jr.** and maintained through **Spatialdom**.
+
+Change proposals should be opened as GitHub issues and reviewed against the compatibility and scope rules in the specification and [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
+The long-term goal is an independently implementable parcel standard, not a format that only Spatialdom software can understand.
+
+---
+
+## Important limitation
+
+PTR is a technical parcel-record format. A `.ptr` file or PTR-derived computation does **not** by itself establish legal ownership, official boundary location, title validity, cadastral authority, tax liability, or an official survey determination.
+
+Where law or professional practice requires an authoritative survey, cadastral record, title, or licensed professional determination, PTR does not replace it.
