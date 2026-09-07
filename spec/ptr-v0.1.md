@@ -1,7 +1,10 @@
 # Parcel Truth Records v0.1 Specification
 
-**Status:** Draft normative specification  
+**Status:** Published normative baseline (pre-stable)  
 **Version:** 0.1  
+**Repository release:** `v0.1.0`  
+**Published:** 2026-09-07  
+**Author:** Dominic C. Fargas Jr. — https://orcid.org/0009-0000-4088-7476  
 **File extension:** `.ptr`  
 **Encoding:** UTF-8 JSON
 
@@ -173,7 +176,7 @@ Implementations MAY normalize all of the following input variations when the res
 - Lowercase or mixed-case direction letters.
 - Leading and trailing whitespace around the whole input.
 - Whitespace between direction letters and numeric components.
-- A degree symbol (`deg`), lowercase `d`, or uppercase `D` between degrees and minutes.
+- A degree symbol (`°`), the text `deg` (case-insensitive), lowercase `d`, or uppercase `D` between degrees and minutes.
 - An apostrophe (`'`), typographic prime, lowercase `m`, or uppercase `M` after minutes.
 - A quotation mark (`"`), typographic double-prime, lowercase `s`, or uppercase `S` after seconds.
 - Hyphen-minus separators in place of degree, minute, and second markers.
@@ -185,12 +188,13 @@ Accepted input examples and their canonical normalized values:
 | --- | --- |
 | `n68-28e` | `N68-28E` |
 | `N 68 28 E` | `N68-28E` |
+| `N 68°28' E` | `N68-28E` |
 | `N 68 deg 28' E` | `N68-28E` |
 | `N68d28m30sE` | `N68-28-30E` |
 | `S 11 D 44 M 00 S W` | `S11-44W` |
 | ` e ` | `E` |
 
-Applications MAY display a canonical value such as `N68-28E` as a more human-friendly form such as `N 68 deg 28' E`, provided the stored PTR value remains canonical.
+Applications MAY display a canonical value such as `N68-28E` as a more human-friendly form such as `N 68°28' E`, provided the stored PTR value remains canonical.
 
 ### 6.5 Invalid or Ambiguous Bearings
 
@@ -505,3 +509,13 @@ A conforming PTR v0.1 writer MUST:
 - Use canonical course representation.
 - Store distances in metres and `declared_area` in square metres.
 - Avoid writing derived computational values as authoritative PTR fields.
+
+## 16. Release, License, and Citation
+
+This specification corresponds to repository release `v0.1.0`, published on 7 September 2026. PTR v0.1 is intentionally pre-stable, but a released `0.1` record is governed by the semantics in this versioned specification rather than by later unversioned edits to the repository.
+
+The specification and accompanying schemas, examples, tests, and documentation are licensed under CC BY 4.0. See `LICENSE.md` in the repository.
+
+Citation metadata is provided in `CITATION.cff`. Academic and research users SHOULD cite the archived DOI for the specific release when one is available; until then, the versioned GitHub release is the preferred reference.
+
+PTR is a technical parcel-record format. Conformance with this specification does not by itself establish legal ownership, official boundary location, title validity, cadastral authority, tax liability, or an official survey determination.
