@@ -3,7 +3,10 @@ title: Parcel Truth Records
 message: "If you use PTR in software, data publication, or research, cite the archived release that matches the PTR version you used."
 type: standard
 authors:
-  - name: Spatialdom
+  - family-names: Fargas
+    given-names: Dominic C.
+    name-suffix: Jr.
+    orcid: "https://orcid.org/0009-0000-4088-7476"
 version: 0.1.0
 date-released: 2026-09-07
 license: CC-BY-4.0
@@ -14,7 +17,10 @@ preferred-citation:
   type: standard
   title: Parcel Truth Records v0.1 Specification
   authors:
-    - name: Spatialdom
+    - family-names: Fargas
+      given-names: Dominic C.
+      name-suffix: Jr.
+      orcid: "https://orcid.org/0009-0000-4088-7476"
   version: 0.1.0
   date-released: 2026-09-07
   url: "https://github.com/spatialdom/ptr/releases/tag/v0.1.0"
